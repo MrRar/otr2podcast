@@ -6,6 +6,7 @@ import urllib.request
 from PIL import Image
 import io
 import os.path
+import re
 
 if len(sys.argv) == 1:
     print("example usage:\n\npython3 rss.py https://ia800901.us.archive.org/1/items/OTRR_Dragnet_Singles\n")
@@ -51,26 +52,49 @@ for child in files_parsed_xml:
         continue
 
     length_secs = round(float(child.find("length").text))
-    title = child.find("title").text
-    author = child.find("artist").text
-    album = child.find("album").text
+    title = child.find("title")!= None and child.find("title").text or file_name
+    #author = child.find("artist").text
+    album = child.find("album") != None and child.find("album").text or ""
     size_bytes = child.find("size").text
     year = ""
     month = ""
     day = ""
-    if len(album.split(",")) > 1:
-        date_txt = album.split(",")[0]
-        month = date_txt.split("/")[0]
-        day = date_txt.split("/")[1]
-        year = "19" + date_txt.split("/")[2]
-    else:
-        year = title.split("-")[0].split(" ")[-1]
+
+    date_pattern = re.compile(".*?(\d{2,4})[-/](\d{2})[-/](\d{2,4}).*")
+    match = date_pattern.match(album) or date_pattern.match(title) or date_pattern.match(file_name)
+    if match and match.group(1) and match.group(2) and match.group(3):
+        if len(match.group(1)) == 4 or len(match.group(3)) == 2 and int(match.group(1)) > 12: # WTH Gunsmoke!
+            year = match.group(1)
+            month = match.group(2)
+            day = match.group(3)
+        else:
+            month = match.group(1)
+            day = match.group(2)
+            year = match.group(3)
+        
+        if len(year) == 2:
+            year = "19" + year
+    
+    '''if len(album.split(",")) > 1:
+        date_split = album.split(",")[0].split("/")
+        if len(date_split) < 3:
+            date_split = album.split(",")[0].split("-")
+        month = date_split[0]
+        day = date_split[1]
+        year = "19" + date_split[2]
+    elif len(title.split("-")) == 3:
+        year = title.split("-")[0][-4:]
         month = title.split("-")[1]
-        day = title.split("-")[2].split(" ")[0]
+        day = title.split("-")[2][:2]
+    else:
+        year = file_name.split("-")[0][-4:]
+        month = file_name.split("-")[1]
+        day = file_name.split("-")[2][:2]'''
     episode_date = None
     try:
         episode_date = date.fromisoformat(f"{year}-{month}-{day}")
     except:
+        print(f"Bad date: {year}-{month}-{day} for {file_name}")
         pass
     mp3_url = base_url + file_name
     
