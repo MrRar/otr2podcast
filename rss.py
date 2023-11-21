@@ -19,12 +19,15 @@ def parsed_xml_from_url(base_url, file_name):
     file_path = "cache/" + file_name
     if not os.path.isfile(file_path):
         urllib.request.urlretrieve(base_url + file_name, file_path)
-    return ET.parse("cache/" + file_name).getroot()
+    return ET.parse("cache/" + file_name, ET.XMLParser(encoding = "cp1252")).getroot()
 
 meta_root = parsed_xml_from_url(base_url, base_file_name + "_meta.xml")
-description = meta_root.find("description").text
-license_url = meta_root.find("licenseurl") and meta_root.find("licenseurl").text or "http://creativecommons.org/licenses/by-nc-sa/3.0/us/"
 collection_title = meta_root.find("title").text
+description = meta_root.find("description").text
+if len(description) < 30:
+    description = collection_title
+
+license_url = meta_root.find("licenseurl") and meta_root.find("licenseurl").text or "http://creativecommons.org/licenses/by-nc-sa/3.0/us/"
 creator = meta_root.find("creator") and meta_root.find("creator").text or "Old Time Radio Researchers Group"
 
 output = f"""<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
