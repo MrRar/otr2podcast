@@ -24,7 +24,18 @@ def parsed_xml_from_url(base_url, file_name):
 meta_root = parsed_xml_from_url(base_url, base_file_name + "_meta.xml")
 collection_title = meta_root.find("title").text
 description = meta_root.find("description").text
-if len(description) < 30:
+description_text = re.sub('(<.+?>)', "", description)
+
+if len(description_text) > 4000:
+    new_description = ""
+    for line in description_text.split("\n"):
+        if len(new_description) + len(line) < 4000:
+            new_description += f"{line}<br />"
+        else:
+            break
+    description = f"<blockquote>{new_description}</blockquote>"
+
+if len(description_text) < 8:
     description = collection_title
 
 license_url = meta_root.find("licenseurl") and meta_root.find("licenseurl").text or "http://creativecommons.org/licenses/by-nc-sa/3.0/us/"
