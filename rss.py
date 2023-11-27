@@ -61,7 +61,7 @@ output = f"""<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" vers
 files_parsed_xml = parsed_xml_from_url(base_url, base_file_name + "_files.xml")
 
 for child in files_parsed_xml:
-    file_name = urllib.parse.quote(child.attrib["name"])
+    file_name = child.attrib["name"]
     if not file_name.endswith(".mp3"):
         continue
 
@@ -89,28 +89,13 @@ for child in files_parsed_xml:
         if len(year) == 2:
             year = "19" + year
     
-    '''if len(album.split(",")) > 1:
-        date_split = album.split(",")[0].split("/")
-        if len(date_split) < 3:
-            date_split = album.split(",")[0].split("-")
-        month = date_split[0]
-        day = date_split[1]
-        year = "19" + date_split[2]
-    elif len(title.split("-")) == 3:
-        year = title.split("-")[0][-4:]
-        month = title.split("-")[1]
-        day = title.split("-")[2][:2]
-    else:
-        year = file_name.split("-")[0][-4:]
-        month = file_name.split("-")[1]
-        day = file_name.split("-")[2][:2]'''
     episode_date = None
     try:
         episode_date = date.fromisoformat(f"{year}-{month}-{day}")
     except:
         print(f"Bad date: {year}-{month}-{day} for {file_name}")
         pass
-    mp3_url = base_url + file_name
+    mp3_url = base_url + urllib.parse.quote(file_name)
     
     # pubDate format from https://stackoverflow.com/questions/12270531/how-to-format-pubdate-with-python
     output += f"""<item>
