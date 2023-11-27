@@ -7,6 +7,7 @@ from PIL import Image
 import io
 import os.path
 import re
+from xml.sax.saxutils import escape
 
 if len(sys.argv) == 1:
     print("example usage:\n\npython3 rss.py https://ia800901.us.archive.org/1/items/OTRR_Dragnet_Singles\n")
@@ -99,15 +100,15 @@ for child in files_parsed_xml:
     
     # pubDate format from https://stackoverflow.com/questions/12270531/how-to-format-pubdate-with-python
     output += f"""<item>
-<description>{title}</description>
+<description>{escape(title)}</description>
 <guid isPermaLink="true">{mp3_url}</guid>
-<itunes:summary>{title}</itunes:summary>
+<itunes:summary>{escape(title)}</itunes:summary>
 <enclosure length="{size_bytes}" type="audio/mpeg" url="{mp3_url}" />
 <itunes:duration>{int(length_secs / 60)}:{length_secs % 60}</itunes:duration>
 <link>{mp3_url}</link>
 <pubDate>{episode_date and episode_date.strftime("%a, %d %b %Y %H:%M:%S %z") or ""}</pubDate>
-<source url="{base_url}">{collection_title}</source>
-<title>{title}</title>
+<source url="{base_url}">{escape(collection_title)}</source>
+<title>{escape(title)}</title>
 </item>
 """
 
