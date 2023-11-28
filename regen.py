@@ -16,6 +16,10 @@ urls = [
     "https://archive.org/download/OTRR_The_Six_Shooter_Singles",
     "https://archive.org/download/FrontierGentleman-All41Episodes",
     "https://archive.org/download/stories-of-sherlock-holmes-sa-85-04-28-x-the-sarussi-pea",
+    "https://archive.org/download/OTRR_Black_Museum_Singles",
+    "https://archive.org/download/OTRR_X_Minus_One_Singles",
+    "https://archive.org/download/father-brown-xx-xx-xx-the-dagger-with-wings",
+    "https://archive.org/download/OTRR_Case_Dismissed_Singles",
 ]
 
 command = "python"
